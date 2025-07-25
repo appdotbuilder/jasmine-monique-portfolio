@@ -1,11 +1,20 @@
 
+import { db } from '../db';
+import { portfolioProjectsTable } from '../db/schema';
 import { type PortfolioProject } from '../schema';
+import { eq, desc } from 'drizzle-orm';
 
-export async function getFeaturedProjects(): Promise<PortfolioProject[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is to fetch only featured portfolio projects from the database.
-    // This will return the highlighted projects like "Nanny Black Book" for the main showcase section.
-    // Should filter projects where is_featured = true and order by creation date or custom priority.
-    
-    return Promise.resolve([]);
-}
+export const getFeaturedProjects = async (): Promise<PortfolioProject[]> => {
+  try {
+    const results = await db.select()
+      .from(portfolioProjectsTable)
+      .where(eq(portfolioProjectsTable.is_featured, true))
+      .orderBy(desc(portfolioProjectsTable.created_at))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch featured projects:', error);
+    throw error;
+  }
+};
